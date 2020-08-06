@@ -1,4 +1,5 @@
-libraries = c("dummies","caret","rpart.plot","plyr","dplyr", "ggplot2","rpart","dplyr","DMwR","randomForest","usdm","corrgram","DataCombine","xlsx")
+libraries = c("dummies","caret","rpart.plot","plyr","dplyr", "ggplot2","rpart","dplyr","DMwR","randomForest",
+              "usdm","corrgram","DataCombine","xlsx")
 lapply(X = libraries,require, character.only = TRUE)
 rm(libraries)
 
@@ -8,7 +9,8 @@ setwd("/Users/ameyaghag/Documents/Harrisburg University/ANLY 530/Final Project/A
 
 #reading the excel file into a dataset
 
-employee <- read.csv("/Users/ameyaghag/Documents/Harrisburg University/ANLY 530/Final Project/ANLY530-Final-Project-AG/Absenteeism_at_work_train.csv")
+employee <- read.csv("/Users/ameyaghag/Documents/Harrisburg University/ANLY 530/Final Project/
+                     ANLY530-Final-Project-AG/Absenteeism_at_work_train.csv")
 summary(employee)
 na.omit(employee) #removing any NA values present in this dataset
 View(employee)
@@ -34,6 +36,45 @@ employee$Pet = as.factor(as.character(employee$Pet))
 
 str(employee)
 
+#missing value analysis
+
+as.matrix(colSums(is.na(employee)))
+
+#we can see one missing value in Hit.target and 2 in Weight
+
+df<-na.omit(employee)
+dim(df)
+
+#now we have 663 rows after removing the 3 missing cases
+
+sapply(df,function(x){sum(is.na(x))})
+
+## Box plot of Absenteeism time in hours with Reason for absence. To verify the outliers in each reason codes.
+
+bar1 = ggplot(data = df, aes(x = ID)) + geom_bar() + ggtitle("Count of ID") + theme_bw()
+
+bar2 = ggplot(data = df, aes(x = Reason.for.absence)) + geom_bar() + 
+  ggtitle("Count of Reason for absence") + theme_bw()
+
+bar3 = ggplot(data = df, aes(x = Month.of.absence)) + geom_bar() + ggtitle("Count of Month") + theme_bw()
+bar3
+
+bar4 = ggplot(data = df, aes(x = Disciplinary.failure)) + geom_bar() + 
+  ggtitle("Count of Disciplinary failure") + theme_bw()
+
+#Check the distribution of numerical data using histogram
+numeric_index = sapply(df, is.numeric)
+numeric_data = df[,numeric_index]
+
+(hist1 = ggplot(data = numeric_data, aes(x =Transportation.expense)) + 
+  ggtitle("Transportation.expense") + geom_histogram(bins = 25))
 
 
+(hist2 = ggplot(data = numeric_data, aes(x =Height)) + 
+  ggtitle("Distribution of Height") + geom_histogram(bins = 25))
 
+(hist3 = ggplot(data = numeric_data, aes(x =Body.mass.index)) + 
+  ggtitle("Distribution of Body.mass.index") + geom_histogram(bins = 25))
+
+(hist4 = ggplot(data = numeric_data, aes(x =Absenteeism.time.in.hours)) + 
+  ggtitle("Distribution of Absenteeism.time.in.hours") + geom_histogram(bins = 25))

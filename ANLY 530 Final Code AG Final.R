@@ -154,34 +154,35 @@ rpart.plot(decision_model)
 dt_predictions = predict(decision_model, test_data)
 
 #Create data frame for actual and predicted values
-df_pred = data.frame("actual"=test_data, "dt_pred"=dt_predictions)
+predDF = cbind(test_data, dt_predictions)
 
 
 #Calcuate MAE, RMSE, R-sqaured for testing data 
-
-MAE(df_pred$actual.Absenteeism.time.in.hours,df_pred$dt_pred)
-RMSE(df_pred$actual.Absenteeism.time.in.hours,df_pred$dt_pred)
+#RMSE 3.94
+#MAE 2.6
+#R^2 0.38
 
 print(postResample(pred = dt_predictions, obs = test_data$Absenteeism.time.in.hours))
 
-plot(test_data$Absenteeism.time.in.hours,type="l",lty=2,col="green")
-lines(dt_predictions,col="blue")
+plot(test_data$Absenteeism.time.in.hours,type="l",lty=2,col="blue")
+lines(dt_predictions,col="red")
 
 
 #NOW TRYING RANDOM FOREST
 
-rf_model = randomForest(Absenteeism.time.in.hours ~ ., data = train_data, ntree=200)
+randomForestModel = randomForest(Absenteeism.time.in.hours ~ ., data = train_data, ntree=200)
+randomForestModel
 
 #Predicting for test data
-rf_predictions = predict(rf_model, test_data)
+RFprediction = predict(randomForestModel, test_data)
 
 #Creating dataframe with actual and predicted values
-df_pred = cbind(df_pred,rf_predictions)
-head(df_pred)
+predDF = cbind(predDF,RFprediction)
 
-print(postResample(pred = rf_predictions, obs = test_data$Absenteeism.time.in.hours))
 
-plot(test_data$Absenteeism.time.in.hours,type="l",lty=2,col="green")
-lines(rf_predictions,col="blue")
+print(postResample(RFprediction,test_data$Absenteeism.time.in.hours))
+
+plot(test_data$Absenteeism.time.in.hours,type="l",lty=2,col="blue")
+lines(RFprediction,col="red")
 
 

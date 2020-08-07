@@ -43,14 +43,7 @@ employee_f<-df
 
 #EXPLORATORY ANALYSIS
 
-ggplot(employee_f,
-       aes_string(y=employee_f$Absenteeism.time.in.hours,x=as.factor(employee_f$Reason.for.absence))) +
-  geom_boxplot() + 
-  xlab('Reason Codes for Absence') +
-  ylab('Absenteeism Time in Hours')
 
-#In the plot below, we look for a distribution of absenteeism time in hours
-#we notice that there is a very big skew to the right - likely due to outliers
 
 hist(employee_f$Absenteeism.time.in.hours, breaks = 30,
      xlab = 'Absenteeism Time in hours', main = " Absenteeism Time in Hours - Distribution", col = "blue")
@@ -86,3 +79,27 @@ seasons <- ggplot(employee_f, aes(x =Seasons,fill = Seasons)) + geom_bar() +
 grid.arrange(smoking,drink,kids,seasons, nrow = 2)
 
 #exploratory analysis doesnt give us a significant idea about reasons for absenteeism
+
+#OUTLIER ANALYSIS
+
+ggplot(employee_f,
+       aes_string(y=employee_f$Absenteeism.time.in.hours,x=as.factor(employee_f$Reason.for.absence))) +
+  geom_boxplot() + 
+  xlab('Reason Codes for Absence') +
+  ylab('Absenteeism Time in Hours')
+
+#In the plot below, we look for a distribution of absenteeism time in hours
+#we notice that there is a very big skew to the right - likely due to outliers
+
+boxplot(employee_f$Absenteeism.time.in.hours, main = "Box plot of Absenteeism time in hours")
+View(employee_f)
+
+boxplot(employee_f$Service.time, main = "Service.time")
+
+boxplot(employee_f$Hit.target, main = "Hit.target")
+
+boxplot(employee_f$Transportation.expense, main = "Transportation.expense")
+
+boxplot(employee_f$Height, main = "Height")
+
+

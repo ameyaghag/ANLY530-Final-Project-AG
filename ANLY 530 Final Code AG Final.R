@@ -8,7 +8,7 @@ getwd()
 setwd("/Users/ameyaghag/Documents/Harrisburg University/ANLY 530/Final Project/ANLY530-Final-Project-AG")
 
 #reading the excel file into a dataset
-
+View(employee)
 employee <- 
 read.csv("/Users/ameyaghag/Documents/Harrisburg University/ANLY 530/Final Project/ANLY530-Final-Project-AG/Absenteeism_at_work_train.csv")
 summary(employee)
@@ -36,14 +36,13 @@ df$Disciplinary.failure = as.factor(as.character(df$Disciplinary.failure))
 df$Education = as.factor(as.character(df$Education))
 df$Son = as.factor(as.character(df$Son))
 df$Pet = as.factor(as.character(df$Pet))
+df$Group=as.factor(as.character(df$Group))
 
 str(df)
 
 employee_f<-df
 
 #EXPLORATORY ANALYSIS
-
-
 
 hist(employee_f$Absenteeism.time.in.hours, breaks = 30,
      xlab = 'Absenteeism Time in hours', main = " Absenteeism Time in Hours - Distribution", col = "blue")
@@ -104,7 +103,7 @@ boxplot(employee_f$Height, main = "Height")
 
 employee_f2<-employee_f
 
-#FIXING THE OUTLIERS
+#FIXING THE OUTLIERS USING DATA FOR 25TH AND 75TH PERCENTILE
 
 for (i in c('Transportation.expense','Service.time','Hit.target','Height','Absenteeism.time.in.hours')){
   q = quantile(employee_f2[,i],c(0.25,0.75))
@@ -144,19 +143,20 @@ test_data = employee_f2[-train_index,]
 library(dmm)
 
 
-#Build decsion tree using rpart
-decision_model = rpart(Absenteeism.time.in.hours ~ ., data = train_data, method = "anova")
+#decsion tree using rpart for group
+decision_model = rpart(Group ~ ., data = train_data, method = "anova")
 
 #Plot the tree
 rpart.plot(decision_model)
-#Perdict for test cases
-#Perdict for test cases
+
 dt_predictions = predict(decision_model, test_data)
+str(dt_predictions)
+dt_predictions<-as.factor(dt_predictions)
 
 #Create data frame for actual and predicted values
 predDF = cbind(test_data, dt_predictions)
 
-
+str(predDF)
 #Calcuate MAE, RMSE, R-sqaured for testing data 
 #RMSE 3.94
 #MAE 2.6
@@ -164,9 +164,29 @@ predDF = cbind(test_data, dt_predictions)
 
 print(postResample(pred = dt_predictions, obs = test_data$Absenteeism.time.in.hours))
 
-plot(test_data$Absenteeism.time.in.hours,type="l",lty=2,col="blue")
-lines(dt_predictions,col="red")
+#Build decsion tree using rpart for Absenteeism in hours
+decision_model = rpart(Absenteeism.time.in.hours  ~ ., data = train_data, method = "anova")
+#Plot the tree
+rpart.plot(decision_model)
+#Perdict for test cases
+#Perdict for test cases
+dt_predictions = predict(decision_model, test_data)
+str(dt_predictions)
+dt_predictions<-as.factor(dt_predictions)
 
+#Create data frame for actual and predicted values
+predDF = cbind(test_data, dt_predictions)
+
+str(predDF)
+#Calcuate MAE, RMSE, R-sqaured for testing data 
+#RMSE 3.94
+#MAE 2.6
+#R^2 0.38
+
+print(postResample(pred = dt_predictions, obs = test_data$Absenteeism.time.in.hours))
+
+
+confusionMatrix(predDF$Group,predDF$dt_predictions)
 
 #NOW TRYING RANDOM FOREST
 
@@ -184,5 +204,10 @@ print(postResample(RFprediction,test_data$Absenteeism.time.in.hours))
 
 plot(test_data$Absenteeism.time.in.hours,type="l",lty=2,col="blue")
 lines(RFprediction,col="red")
+
+
+
+
+
 
 
